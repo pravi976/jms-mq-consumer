@@ -1,0 +1,30 @@
+repository: regression-test-producer
+owner: platform-regression
+default_branch: develop
+services_root: regression/services
+build_tool: gradle
+commands:
+  pre_build: []
+  build:
+    - '.\gradlew.bat --gradle-user-home .gradle-home clean test bootJar'
+  post_build: []
+  pre_test:
+    - 'powershell -NoProfile -ExecutionPolicy Bypass -Command "$jar = Resolve-Path ''.\build\libs\regression-test-producer-1.0.0-SNAPSHOT.jar''; $proc = Start-Process -FilePath ''java'' -ArgumentList ''-jar'', $jar -PassThru -WindowStyle Hidden; Set-Content ''.regauto-producer.pid'' $proc.Id; for ($i = 0; $i -lt 30; $i++) { try { Invoke-RestMethod ''http://localhost:8091/api/upstream/ops/status'' | Out-Null; exit 0 } catch { Start-Sleep -Seconds 1 } }; throw ''producer app did not become ready''' 
+  post_test:
+    - 'powershell -NoProfile -ExecutionPolicy Bypass -Command "if (Test-Path ''.regauto-producer.pid'') { Remove-Item ''.regauto-producer.pid'' -Force -ErrorAction SilentlyContinue }; $connection = Get-NetTCPConnection -LocalPort 8091 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1; if ($connection) { Stop-Process -Id $connection.OwningProcess -Force -ErrorAction SilentlyContinue }; exit 0"'
+gate_policies:
+  level1:
+    enabled: true
+    reason: Upstream unit-style regression is active
+  level2:
+    enabled: true
+    reason: Upstream API regression is active
+service_owners:
+  upstream-customer-service: upstream-team
+impact_map:
+  src/main/java/com/enterprise/regression/upstream/customer/**:
+    - upstream-customer-service
+  src/main/java/com/enterprise/regression/upstream/ops/**:
+    - upstream-customer-service
+  src/main/resources/**:
+    - upstream-customer-service

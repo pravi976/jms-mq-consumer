@@ -1,0 +1,39 @@
+name: Producer Regression
+
+on:
+  push:
+    branches: [develop, release]
+  pull_request:
+    branches: [develop, release]
+  workflow_dispatch:
+
+jobs:
+  producer-layers:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        layer: [level1, level2]
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install enterprise regression framework
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "git+${{ github.server_url }}/${{ github.repository_owner }}/enterprise-regression-platform.git"
+      - name: Checkout, build, and run producer regression layer
+        run: |
+          regauto checkout-build-run \
+            --remote-url "${{ github.server_url }}/${{ github.repository }}.git" \
+            --branch "${{ github.head_ref || github.ref_name }}" \
+            --gate "${{ matrix.layer }}" \
+            --workspace-root "$RUNNER_TEMP/regression-workspaces" \
+            --directory-name regression-test-producer \
+            --results-dir "$RUNNER_TEMP/regression-results/${{ matrix.layer }}" \
+            --trigger github-actions
+      - name: Upload regression artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: producer-${{ matrix.layer }}-results
+          path: ${{ runner.temp }}/regression-results/${{ matrix.layer }}
