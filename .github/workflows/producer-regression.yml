@@ -2,9 +2,9 @@ name: Producer Regression
 
 on:
   push:
-    branches: [develop, release]
+    branches: [main, develop, release]
   pull_request:
-    branches: [develop, release]
+    branches: [main, develop, release]
   workflow_dispatch:
 
 jobs:
