@@ -3,4 +3,6 @@
 build/
 out/
 *.log
+__pycache__/
+*.pyc
 .regauto-*.pid
