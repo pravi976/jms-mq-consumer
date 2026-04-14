@@ -4,7 +4,7 @@ team: upstream-team
 microservice: upstream-customer-service
 service_type: python
 tags: [level1, unit, critical, upstream-customer-service, develop, release]
-branches: [develop, release]
+branches: [main, develop, release]
 severity: critical
 python:
   script: regression/executors/upstream_customer_service.py
