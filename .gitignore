@@ -6,3 +6,7 @@ out/
 __pycache__/
 *.pyc
 .regauto-*.pid
+bin/
+build/
+.gradle/
+.gradle-home/
