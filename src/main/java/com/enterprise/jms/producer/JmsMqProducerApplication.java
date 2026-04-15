@@ -1,11 +1,11 @@
-package com.enterprise.regression.upstream;
+package com.enterprise.jms.producer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class RegressionTestUpstreamApplication {
+public class JmsMqProducerApplication {
     public static void main(String[] args) {
-        SpringApplication.run(RegressionTestUpstreamApplication.class, args);
+        SpringApplication.run(JmsMqProducerApplication.class, args);
     }
 }
