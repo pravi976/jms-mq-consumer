@@ -1,4 +1,5 @@
 name: JMS MQ Consumer Regression
+run-name: JMS MQ Consumer Regression on ${{ github.ref_name }}
 
 on:
   push:
